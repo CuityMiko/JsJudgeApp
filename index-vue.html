@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <meta name='apple-itunes-app' content='app-id=1286623506' aria-hidden="true" hidden="true">
+    <title>Open App - Vue</title>
+</head>
+<body>
+    <h3>手机判断并安装某App</h3>
+    <div id="app">
+        <a :href="appurl" @click.prevent="openapp">立即打开{{ title }}</a>
+    </div>
+    <script src="/bower_components/vue/dist/vue.min.js"></script>
+    <script>
+        var os = function () {
+            var ua = navigator.userAgent,
+                    isWeixin = /(?:micromessenger)/.test(ua.toLowerCase()),
+                    isQB = /(?:MQQBrowser|QQ)/.test(ua),
+                    isWindowsPhone = /(?:Windows Phone)/.test(ua),
+                    isSymbian = /(?:SymbianOS)/.test(ua) || isWindowsPhone,
+                    isAndroid = /(?:Android)/.test(ua),
+                    isFireFox = /(?:Firefox)/.test(ua),
+                    isChrome = /(?:Chrome|CriOS)/.test(ua),
+                    isIpad = /(?:iPad|PlayBook)/.test(ua),
+                    isTablet = /(?:iPad|PlayBook)/.test(ua) || (isFireFox && /(?:Tablet)/.test(ua)),
+                    isSafari = /(?:Safari)/.test(ua),
+                    isIPhone = /(?:iPhone)/.test(ua) && !isTablet,
+                    isOpen = /(?:Opera Mini)/.test(ua),
+                    isUC = /(?:UCWEB|UCBrowser)/.test(ua),
+                    isPc = !isIPhone && !isAndroid && !isSymbian;
+            return {
+                isWeixin: isWeixin,
+                isQB: isQB,
+                isTablet: isTablet,
+                isIPhone: isIPhone,
+                isAndroid: isAndroid,
+                isPc: isPc,
+                isOpen: isOpen,
+                isUC: isUC,
+                isIpad: isIpad
+            };
+        }();
+
+        new Vue({
+            el:'#app',
+            data:{
+                appurl:'',
+                appstore:'',
+                title:''
+            },
+            created () {
+                var _self = this;
+                if(os.isAndroid){ 
+                    _self.title = 'android';
+                    _self.appurl = 'com.commoditiesinchina.cstores://app';
+                    _self.appstore = 'https://play.google.com/store/apps/details?id=com.commoditiesinchina.cstores';
+                }
+                if(os.isIPhone || os.isIpad){
+                    _self.title = 'ios';
+                    _self.appurl = 'KstoreApp://';
+                    _self.appstore = 'https://itunes.apple.com/cn/app/cstrores/id1286623506';
+                }
+            },
+            methods:{
+                openapp(){
+                    var _self = this;
+                    var clickedAt = new Date();    
+                    setTimeout(function(){  
+                        if (new Date() - clickedAt < 2000){ 
+                            window.location = _self.appstore;  
+                        }  
+                    }, 500);   
+                }
+            }    
+        })
+    </script>
+</body>
+</html>
