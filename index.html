@@ -5,12 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name='apple-itunes-app' content='app-id=1286623506' aria-hidden="true" hidden="true">
-    <title>Open App - js</title>
+    <title>Open App - Vue</title>
 </head>
 <body>
     <h3>手机判断并安装某App</h3>
-    <a href="KstoreApp://" id="btnopenios" style="display:none">立即打开1</a>
-    <a href="com.commoditiesinchina.cstores://app" id="btnopenandroid" style="display:none">立即打开2</a>
+    <div id="app">
+        <a v-show="android" href="com.commoditiesinchina.cstores://app" id="btnopenandroid">立即打开{{ title }}</a>
+        <a v-show="ios" href="KstoreApp://" id="btnopenios">立即打开{{ title }}</a>
+    </div>
+    <script src="/bower_components/vue/dist/vue.min.js"></script>
     <script>
         var os = function () {
             var ua = navigator.userAgent,
@@ -40,17 +43,55 @@
                 isIpad: isIpad
             };
         }();
+
+        new Vue({
+            el:'#app',
+            data:{
+                appurl:'',
+                appstore:'',
+                title:'',
+                android:false,
+                ios:false
+            },
+            created () {
+                var _self = this;
+                if(os.isAndroid){ 
+                    console.log(1)
+                    _self.title = 'android';
+                    _self.android = true;
+                    _self.appurl = 'com.commoditiesinchina.cstores://app';
+                    _self.appstore = 'https://play.google.com/store/apps/details?id=com.commoditiesinchina.cstores';
+                }
+                if(os.isIPhone || os.isIpad){
+                    console.log(2)
+                    _self.title = 'ios';
+                    _self.ios = true;
+                    _self.appurl = 'KstoreApp://';
+                    _self.appstore = 'https://itunes.apple.com/cn/app/cstrores/id1286623506';
+                }
+            },
+            methods:{
+                openapp(){
+                    var _self = this;
+                    var clickedAt = new Date();    
+                    setTimeout(function(){  
+                        if (new Date() - clickedAt < 2000){ 
+                            window.location = _self.appstore;  
+                        }  
+                    }, 500);   
+                }
+            }    
+        })
+
 　　　　 var appstore = '';
 　　　　 // 为 a标签 绑定事件，如果在500ms内，没有解析到协议，那么就会跳转到下载链接 
         if(os.isAndroid){ 
-            document.getElementById("btnopenandroid").style="display:inline";
             appstore = 'https://play.google.com/store/apps/details?id=com.commoditiesinchina.cstores';
         }
         if(os.isIPhone || os.isIpad){
-            document.getElementById("btnopenios").style="display:inline";
             appstore = "https://itunes.apple.com/cn/app/cstrores/id1286623506"; 
         }
-        function applink(fail){  
+        function applink(fail){              
             return function(){  
                 var clickedAt = new Date();  
                 setTimeout(function(){  
